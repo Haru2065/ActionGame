@@ -20,8 +20,19 @@ UEnemyStatus::UEnemyStatus()
 	//攻撃力は50に設定
 	EnemyAttackPower = 50.0f;
 
+	//ブレイク値を0で初期化
+	InitBreak = 0.0;
+
+	//現在のブレイク値を初期値にする
+	CurrentBreak = InitBreak;
+
+	//最大ブレイク値は100に設定
+	MaxBreak = 100.0f;
+
 	//生存状態に設定
 	bIsEnemyDead = false;
+
+	bIsBreak = false;
 
 	// ...
 }
@@ -64,6 +75,8 @@ void UEnemyStatus::EnemyOnDamage(float totalDamage)
 	// HPが変化したら登録されている全てのリスナー(UIなど)に通知する
 	EnemyHPBarChanged.Broadcast(GetEnemyHPPercent());
 
+	AddBreakPoint(10);
+
 	if (EnemyCurrentHP <= 0.0f)
 	{
 		bIsEnemyDead = true;
@@ -76,11 +89,40 @@ void UEnemyStatus::EnemyOnDamage(float totalDamage)
 /// </summary>
 void UEnemyStatus::setEnemyStatus(){}
 
+//ブレイク値を上げるメソッド
+void  UEnemyStatus::AddBreakPoint(float amount)
+{
+	if (bIsEnemyDead) return;
+
+	CurrentBreak += amount;
+	CurrentBreak = FMath::Clamp(CurrentBreak, 0.0f, MaxBreak);
+	
+	EnemyBreakBarChanged.Broadcast(GetBreakPercent());
+
+	if (CurrentBreak >= MaxBreak)
+	{
+		bIsBreak = true;
+
+		EnemyOnBreak.Broadcast();
+	}
+}
+
+void UEnemyStatus::BreakTimer()
+{
+
+}
+
 float UEnemyStatus::GetEnemyHPPercent() const
 {
 	//０になったらエラーが起こらないように０で固定させる
 	if (EnemyMaxHP <= 0.0) return 0.0f;
 	
 	return EnemyCurrentHP / EnemyMaxHP;
+}
+
+float UEnemyStatus::GetBreakPercent() const
+{
+	if (MaxBreak <= 0.0f)return 0.0f;
+	return CurrentBreak / MaxBreak;
 }
 
