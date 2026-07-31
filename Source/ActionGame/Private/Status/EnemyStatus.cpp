@@ -32,7 +32,7 @@ UEnemyStatus::UEnemyStatus()
 	//¶‘¶ó‘Ô‚ÉÝ’è
 	bIsEnemyDead = false;
 
-	bIsBreak = false;
+	bIsStunned = false;
 
 	// ...
 }
@@ -44,7 +44,7 @@ void UEnemyStatus::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+
 }
 
 
@@ -101,16 +101,23 @@ void  UEnemyStatus::AddBreakPoint(float amount)
 
 	if (CurrentBreak >= MaxBreak)
 	{
-		bIsBreak = true;
-
-		EnemyOnBreak.Broadcast();
+		EnterBreakState();
 	}
 }
 
 void UEnemyStatus::BreakTimer()
 {
-
+	
 }
+
+void UEnemyStatus::EnterBreakState()
+{
+	bIsStunned = true;
+
+	EnemyOnBreak.Broadcast(GetOwner());
+}
+
+
 
 float UEnemyStatus::GetEnemyHPPercent() const
 {

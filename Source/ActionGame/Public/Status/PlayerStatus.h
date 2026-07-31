@@ -79,4 +79,7 @@ protected:
 	//死亡したか
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "StatusRuntime")
 	bool bIsDead;
+
+public:
+	
 };

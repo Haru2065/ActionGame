@@ -12,7 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FenemyHPBarChanged, float, HPPercent
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FenemyBreakBarChanged, float, BreakPercent);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FenemyOnBreak);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FenemyOnBreak, AActor*, BrokenEnemyActor);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACTIONGAME_API UEnemyStatus : public UActorComponent
@@ -37,6 +37,9 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	//ブレイクゲージが満タンになったときに呼ばれる想定の関数
+	void EnterBreakState();
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -56,8 +59,8 @@ public:
 	UFUNCTION(BlueprintPure, Category = "StatusEnemy")
 	float GetBreakPercent() const;
 
-	//ブレイク状態か
-	bool bIsBreak;
+	//スタン状態か
+	bool bIsStunned;
 
 protected:
 

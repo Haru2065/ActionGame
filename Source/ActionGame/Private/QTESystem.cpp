@@ -32,3 +32,22 @@ void UQTESystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 	// ...
 }
 
+void UQTESystem::HandleEnemyBreak(AActor* BrokenEnemyActor)
+{
+	//nullチェック
+	if (!BrokenEnemyActor) return;
+
+	//QTE攻撃を与える対象を設定
+	CurrentBreakTargetEnemy = BrokenEnemyActor;
+
+	//QTE開始
+	StartQTE();
+}
+
+/// <summary>
+/// QTE開始メソッド
+/// </summary>
+void UQTESystem::StartQTE()
+{
+
+}
