@@ -18,7 +18,7 @@ public:
 	UQTESystem();
 
 	/// <summary>
-	/// �G�̃u���C�N�C�x���g���󂯎��֐�
+	/// 敵のブレイクイベントを受け取る関数
 	/// </summary>
 	/// <param name="BrokenEnemyActor"></param>
 	UFUNCTION()
@@ -28,7 +28,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	//���݂�QTE�̑ΏۂɂȂ��Ă���G
+	//現在のQTEの対象になっている敵
 	UPROPERTY(BlueprintReadOnly, Category = "QTE")
 	AActor* CurrentBreakTargetEnemy;
 
@@ -37,5 +37,6 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
+	//QTEを開始するメソッド
 	void StartQTE();
 };
