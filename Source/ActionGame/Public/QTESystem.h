@@ -2,7 +2,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "QTEPattern.h" // FQTEPattern\‘¢‘Ì‚ğg‚¤‚½‚ß‚É•K—v
+#include "QTEPattern.h" // FQTEPatternï¿½\ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ß‚É•Kï¿½v
 //#include "Framework/Application/SlateApplication.h"
 #include "QTESystem.generated.h"
 
@@ -16,7 +16,7 @@ public:
 	UQTESystem();
 
 	/// <summary>
-	/// “G‚ÌƒuƒŒƒCƒNƒCƒxƒ“ƒg‚ğó‚¯æ‚éŠÖ”
+	/// æ•µã®ãƒ–ãƒ¬ã‚¤ã‚¯ã‚¤ãƒ™ãƒ³ãƒˆã‚’å—ã‘å–ã‚‹é–¢æ•°
 	/// </summary>
 	/// <param name="BrokenEnemyActor"></param>
 	UFUNCTION()
@@ -26,12 +26,12 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	//Œ»İ‚ÌQTE‚Ì‘ÎÛ‚É‚È‚Á‚Ä‚¢‚é“G
+	//ç¾åœ¨ã®QTEã®å¯¾è±¡ã«ãªã£ã¦ã„ã‚‹æ•µ
 	UPROPERTY(BlueprintReadOnly, Category = "QTE")
 	AActor* CurrentBreakTargetEnemy;
 
-	// QTEƒpƒ^[ƒ“‚ª“o˜^‚³‚ê‚Ä‚¢‚éDataTableƒAƒZƒbƒg‚Ö‚ÌQÆ
-	// ƒGƒfƒBƒ^ã‚ÅDT_QTEPattern‚ğŠ„‚è“–‚Ä‚Äg‚¤
+	// QTEï¿½pï¿½^ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½^ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½DataTableï¿½Aï¿½Zï¿½bï¿½gï¿½Ö‚ÌQï¿½ï¿½
+	// ï¿½Gï¿½fï¿½Bï¿½^ï¿½ï¿½ï¿½DT_QTEPatternï¿½ï¿½ï¿½ï¿½ï¿½è“–ï¿½Ä‚Ägï¿½ï¿½
 	UPROPERTY(EditDefaultsOnly, Category = "QTE")
 	UDataTable* QTEPatternTable;
 
@@ -39,12 +39,15 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+private:
+	//QTEã‚’é–‹å§‹ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+
 	UFUNCTION(BlueprintCallable, Category = "QTE")
 	void StartQTE();
 
 	/// <summary>
-	/// ƒQ[ƒ€ƒpƒbƒh‚ª”»’è‚³‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©‚ğ”»’è‚·‚éboolŒ^‚Ìƒƒ\ƒbƒh
+	/// ï¿½Qï¿½[ï¿½ï¿½ï¿½pï¿½bï¿½hï¿½ï¿½ï¿½ï¿½ï¿½è‚³ï¿½ï¿½Ä‚ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½ï¿½ğ”»’è‚·ï¿½ï¿½boolï¿½^ï¿½Ìƒï¿½ï¿½\ï¿½bï¿½h
 	/// </summary>
-	/// <returns>Œ»İ‚ÌƒQ[ƒ€ƒpƒbƒh‚ÌÚ‘±ó‘Ô‚©‚ğ•Ô‚·</returns>
+	/// <returns>ï¿½ï¿½ï¿½İ‚ÌƒQï¿½[ï¿½ï¿½ï¿½pï¿½bï¿½hï¿½ÌÚ‘ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½ï¿½Ô‚ï¿½</returns>
 	//bool IsGamePadpadConnected() const;
 };
