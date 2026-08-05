@@ -2,6 +2,7 @@
 
 
 #include "QTESystem.h"
+//#include "Framework/Application/SlateApplication.h"
 
 // Sets default values for this component's properties
 UQTESystem::UQTESystem()
@@ -51,3 +52,13 @@ void UQTESystem::StartQTE()
 {
 
 }
+
+/// <summary>
+/// ゲームパッドが判定されているかどうかを判定するbool型のメソッド
+/// </summary>
+/// <returns>現在のゲームパッドの接続状態かを返す</returns>
+//bool UQTESystem::IsGamePadpadConnected() const
+//{
+//	//現在ゲームパッドが接続されているかどうかを判定
+//	return FSlateApplication::Get().IsGamepadAttached();
+//}

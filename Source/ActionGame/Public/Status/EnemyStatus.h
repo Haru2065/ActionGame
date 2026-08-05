@@ -7,7 +7,7 @@
 #include "EnemyStatus.generated.h"
 
 // HPが変化した時にBP側へ通知するためのデリゲートを宣言
-// DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam = 「引数を1つ持つ、BPからバインド可能な通知」という意味
+// DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam = 「引数を1つ持つ、BPからバインド可能な通知」
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FenemyHPBarChanged, float, HPPercent);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FenemyBreakBarChanged, float, BreakPercent);
