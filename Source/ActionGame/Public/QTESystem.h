@@ -2,8 +2,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "QTEPattern.h" // FQTEPattern�\���̂��g�����߂ɕK�v
-//#include "Framework/Application/SlateApplication.h"
+#include "QTEPattern.h"
 #include "QTESystem.generated.h"
 
 
@@ -30,10 +29,17 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "QTE")
 	AActor* CurrentBreakTargetEnemy;
 
-	// QTE�p�^�[�����o�^����Ă���DataTable�A�Z�b�g�ւ̎Q��
-	// �G�f�B�^���DT_QTEPattern�����蓖�ĂĎg��
+	//QTEのDataTable
 	UPROPERTY(EditDefaultsOnly, Category = "QTE")
 	UDataTable* QTEPatternTable;
+
+	//エディター上で割り当て(QTE用のインプットマッピング)
+	UPROPERTY(EditAnywhere, Category = "QTE")
+	class UInputMappingContext* QTEMappingContext;
+
+	//エディター上で割り当て(通常時のインプットマッピング)
+	UPROPERTY(EditAnywhere, Category = "QTE")
+	class UInputMappingContext* DefaultMappingContext;
 
 public:
 	// Called every frame
@@ -45,9 +51,10 @@ private:
 	UFUNCTION(BlueprintCallable, Category = "QTE")
 	void StartQTE();
 
-	/// <summary>
-	/// �Q�[���p�b�h�����肳��Ă��邩�ǂ����𔻒肷��bool�^�̃��\�b�h
-	/// </summary>
-	/// <returns>���݂̃Q�[���p�b�h�̐ڑ���Ԃ���Ԃ�</returns>
-	//bool IsGamePadpadConnected() const;
+	void RandomShowQTE();
+
+	bool IsConnected;
+
+	UFUNCTION(BlueprintCallable, Category = "QTE")
+	void EndQTE();
 };

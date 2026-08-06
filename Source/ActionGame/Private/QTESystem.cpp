@@ -2,6 +2,10 @@
 
 
 #include "QTESystem.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
+#include "GameFramework/PlayerController.h"
+
 //#include "Framework/Application/SlateApplication.h"
 
 // Sets default values for this component's properties
@@ -22,6 +26,20 @@ void UQTESystem::BeginPlay()
 
 	// ...
 	
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+
+	APlayerController* PC = OwnerPawn ? Cast<APlayerController>(OwnerPawn->GetController()) : nullptr;
+
+	if (PC)
+	{
+		UEnhancedInputLocalPlayerSubsystem* Subsystem =
+			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
+
+		if (Subsystem)
+		{
+			Subsystem->AddMappingContext(QTEMappingContext, 0);
+		}
+	}
 }
 
 
@@ -50,6 +68,25 @@ void UQTESystem::HandleEnemyBreak(AActor* BrokenEnemyActor)
 /// </summary>
 void UQTESystem::StartQTE()
 {
+	if (!QTEPatternTable) return;
+
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+
+	APlayerController* PC = OwnerPawn ? Cast<APlayerController>(OwnerPawn->GetController()) : nullptr;
+
+	if (!PC) return;
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem =
+		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
+
+	if (!Subsystem) return;
+
+	// DataTableから全行を取得
+	TArray<FQTEPattern*> AllPatterns;
+}
+
+void UQTESystem::EndQTE()
+{
 
 }
 
@@ -62,3 +99,13 @@ void UQTESystem::StartQTE()
 //	//現在ゲームパッドが接続されているかどうかを判定
 //	return FSlateApplication::Get().IsGamepadAttached();
 //}
+
+void UQTESystem::RandomShowQTE()
+{
+
+}
+
+void GetPattern()
+{
+
+}
