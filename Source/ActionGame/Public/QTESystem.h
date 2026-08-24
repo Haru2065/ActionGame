@@ -41,6 +41,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "QTE")
 	class UInputMappingContext* DefaultMappingContext;
 
+	// StartQTE()で抽選された「今回のQTEパターン」を保持しておく変数。
+	// RandomShowQTE()や、これから作る入力判定処理から参照する。
+	UPROPERTY(BlueprintReadOnly, Category = "QTE")
+	FQTEPattern CurrentQTEPattern;
+
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

@@ -13,7 +13,12 @@ UQTESystem::UQTESystem()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
+	
+	//毎フレームTickComponent呼ぶ設定
 	PrimaryComponentTick.bCanEverTick = true;
+
+	//コントローラー接続フラグの初期値。判定処理が実装されるまでは仮でfalse扱い
+	IsConnected = false;
 
 	// ...
 }
@@ -28,12 +33,12 @@ void UQTESystem::BeginPlay()
 	
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 
-	APlayerController* PC = OwnerPawn ? Cast<APlayerController>(OwnerPawn->GetController()) : nullptr;
+	APlayerController* playerController = OwnerPawn ? Cast<APlayerController>(OwnerPawn->GetController()) : nullptr;
 
-	if (PC)
+	if (playerController)
 	{
 		UEnhancedInputLocalPlayerSubsystem* Subsystem =
-			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
+			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer());
 
 		if (Subsystem)
 		{
@@ -68,26 +73,70 @@ void UQTESystem::HandleEnemyBreak(AActor* BrokenEnemyActor)
 /// </summary>
 void UQTESystem::StartQTE()
 {
+	// DataTableが設定されていなければ処理できないので中断
 	if (!QTEPatternTable) return;
 
+	//このコンポーネントを持っているアクター(プレイヤー)からPlayerControllerを取得
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	APlayerController* playerController = OwnerPawn ? Cast<APlayerController>(OwnerPawn->GetController()) : nullptr;
 
-	APlayerController* PC = OwnerPawn ? Cast<APlayerController>(OwnerPawn->GetController()) : nullptr;
+	if (!playerController) return;
 
-	if (!PC) return;
-
+	// Enhanced InputのSubsystemを取得
 	UEnhancedInputLocalPlayerSubsystem* Subsystem =
-		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
+		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer());
 
 	if (!Subsystem) return;
 
+	// 現在のデバイス接続状態に応じて、絞り込むDeviceTypeを決定
+	// (IsConnectedの中身は今後、実際の接続判定処理で更新する想定。現状は仮のtrue/false切替用)
+	// IsConnected == true なら Gamepad、false なら KeyboardMouse
+	EQTEDeviceType targetDeveoceType = IsConnected ? EQTEDeviceType::Gamepad : EQTEDeviceType::KeyboardMouse;
+
 	// DataTableから全行を取得
 	TArray<FQTEPattern*> AllPatterns;
-}
+	QTEPatternTable->GetAllRows<FQTEPattern>(TEXT("StartQTE"), AllPatterns);
 
-void UQTESystem::EndQTE()
-{
+	//デバイスタイプが一致する行だけを候補として絞り込む
+	TArray<FQTEPattern*> FilteredPatterns;
+	for (FQTEPattern* Pattern : AllPatterns)
+	{
+		if (Pattern && Pattern->DeviceType == targetDeveoceType)
+		{
+			FilteredPatterns.Add(Pattern);
+		}
+	}
 
+	// 候補が1つもなければ処理を中断
+	if (FilteredPatterns.Num() == 0) return;
+
+	//候補の中からランダムに１つのインデックスを選択
+	int32 RandomIndex = FMath::RandRange(0, FilteredPatterns.Num() - 1);
+
+	//選ばれたインデックスから、実際のパターンデータを取り出す
+	FQTEPattern* SelectedPattern = FilteredPatterns[RandomIndex];
+
+	//万が一中身がnullだったときの保険nullチェック
+	if (!SelectedPattern) return;
+
+	//選ばれたパターンの中身をメンバー変数にコピーして保持
+	//Datatableが再読み込み時にポインターの場合無効を防ぐために値としてコピーする
+	CurrentQTEPattern = *SelectedPattern;
+
+	// 通常操作用のIMCを一時的に外す(QTE中は移動・攻撃を受け付けないようにする)
+	if (DefaultMappingContext)
+	{
+		Subsystem->RemoveMappingContext(DefaultMappingContext);
+	}
+
+	// QTE専用のIMCを追加する(優先度1、DefaultMappingContextの0より高く設定)
+	if (QTEMappingContext)
+	{
+		Subsystem->AddMappingContext(QTEMappingContext, 1);
+	}
+
+	// 抽選が終わったので、実際の演出・入力受付処理へ進む
+	RandomShowQTE();
 }
 
 /// <summary>
@@ -100,12 +149,39 @@ void UQTESystem::EndQTE()
 //	return FSlateApplication::Get().IsGamepadAttached();
 //}
 
+/// <summary>
+/// 実際のスロー演出やQTEUIのアイコン表示と入力受付を行うメソッド
+/// </summary>
 void UQTESystem::RandomShowQTE()
 {
 
 }
 
-void GetPattern()
+/// <summary>
+/// QTEを終了させるメソッド
+/// 成功、失敗のどちらかの結果でも必ずここで実行される
+/// QTE用IMCを解除し、通常操作時のIMCに切り替える
+/// </summary>
+void UQTESystem::EndQTE()
 {
+	// プレイヤー本体からPlayerControllerを取得
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	APlayerController* PlayerController = OwnerPawn ? Cast<APlayerController>(OwnerPawn->GetController()) : nullptr;
+	if (!PlayerController) return;
 
+	UEnhancedInputLocalPlayerSubsystem* Subsystem =
+		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	if (!Subsystem) return;
+
+	// QTE用のIMCを外す
+	if (QTEMappingContext)
+	{
+		Subsystem->RemoveMappingContext(QTEMappingContext);
+	}
+
+	// 通常操作用のIMCを復活させる
+	if (DefaultMappingContext)
+	{
+		Subsystem->AddMappingContext(DefaultMappingContext, 0);
+	}
 }
