@@ -4,41 +4,26 @@
 
 #include "CoreMinimal.h"
 #include "Engine/Datatable.h"
-#include "InputAction.h" 
+#include "InputAction.h"
+#include "Animation/AnimMontage.h"
+#include "Camera/CameraShakeBase.h"
 #include "QTEPattern.generated.h"
 
 /**
  * 
  */
 
-//このパターンがどちらのデバイス向けかを区別するための列挙体
+/// <summary>
+/// このパターンがどちらのデバイス向けかを区別するための列挙体
+/// StartQTE実行時に、接続デバイスに応じてこのフィールドでプールを絞り込む
+/// </summary>
 UENUM(BlueprintType)
 enum class EQTEDeviceType : uint8
 {
-	Gamepad			UMETA(DisplayName = "GamePad"),
-	KeyboardMouse	UMETA(DisplayName = "KeyboardMouse")
+	Gamepad				UMETA(DisplayName = "GamePad"),
+	KeyboardMouse		UMETA(DisplayName = "KeyboardMouse")
 };
 
-//QTEの「１回分の入力」を表す構造体
-USTRUCT(BlueprintType)
-struct FQTEInoutStep
-{
-	GENERATED_BODY()
-	
-public:
-
-	//入力で要求するInputAction
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "QTE")
-	UInputAction* RequiredAction = nullptr;
-
-	//画面に表示させるQTEのボタンアイコン
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "QTE")
-	UTexture2D* DisplayIcon = nullptr;
-};
-
-/// <summary>
-/// DataTableの実際のデータ情報(1行分の=QTEパターン１つ分のデータ)
-/// </summary>
 USTRUCT(BlueprintType)
 struct FQTEPattern : public FTableRowBase
 {
@@ -46,17 +31,24 @@ struct FQTEPattern : public FTableRowBase
 
 public:
 
-	//デバイスパターン
-	//QTEシステムで、StartQTE()を実行時に接続デバイスに応じてこのフィールドでプールを絞り込む
+	//このパターンがゲームパッド用かキーボード用か
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "QTE")
 	EQTEDeviceType DeviceType = EQTEDeviceType::Gamepad;
 
-	//入力するInputActionの設定
-	//実際に要求する入力の並び、アイコンとInputActionを割り当てできるように配列化する
+	//このパターンで要求する入力(1つだけ、シンプルな単体ボタン)
+	//キーボード/ゲームパッドどちらの割り当てかはInputMappingContext側で解決させる
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "QTE")
-	TArray<FQTEInoutStep> InputSequence;
+	UInputAction* RequiredAction = nullptr;
 
-	//将来敵に難易度拡張に使用
+	//画面に表示するボタンアイコン
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "QTE")
-	int32 LevelInput = 0;
+	UTexture2D* DisplayIcon = nullptr;
+
+	//このパターンが選ばれたときに再生する専用フィニッシュモーション
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "QTE|Presentation")
+	class UAnimMontage* FinisherMontage = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "QTE|Presentation")
+	TSubclassOf<class UCameraShakeBase> CameraShakeClass;
+
 };

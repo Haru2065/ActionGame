@@ -95,7 +95,7 @@ void UPlayerStatus::setPlayerStatus(){}
 /// <returns></returns>
 float UPlayerStatus::GetHPPercent()const
 {
-	//０になったらエラーが起こらないように０で固定させる
+	//0になったらエラーが起こらないように０で固定させる
 	if (MaxHP <= 0.0) return 0.0f;
 
 	return CurrentHP / MaxHP;

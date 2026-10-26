@@ -3,8 +3,10 @@
 
 #include "QTESystem.h"
 #include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 //#include "Framework/Application/SlateApplication.h"
 
@@ -153,6 +155,32 @@ void UQTESystem::StartQTE()
 /// 実際のスロー演出やQTEUIのアイコン表示と入力受付を行うメソッド
 /// </summary>
 void UQTESystem::RandomShowQTE()
+{
+	// パターンの中に1つも入力ステップが無ければ何もできないので中断
+	//if (CurrentQTEPattern.InputSequence.Num() == 0) return;
+
+	//進行状況を先頭の(0番目)にリセット
+	//CurrentStepIndex = 0;
+
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2f);
+
+	//BindCurrentStepInput();
+}
+
+/// <summary>
+/// CurrentStepIndexがさしているステップのInputActionを
+/// EnhancedInputComponent経由でバインドする
+/// </summary>
+//void UQTESystem::BindCurrentStepInput()
+//{
+//	//if (!CurrentQTEPattern.InputSequence.IsValidIndex(CurrentStepIndex))return;
+//
+//	//UInputAction* RequiredAction = CurrentQTEPattern.InputSequence[CurrentStepIndex].RequiredAction;
+//
+//	//if (!RequiredAction) return;
+//}
+
+void UQTESystem::OnQTEInputReceived()
 {
 
 }
